@@ -33,7 +33,7 @@ Pastikan layanan di atas dapat diakses agar aplikasi ini dapat berfungsi dengan 
 
 1.  **Clone repositori:**
     ```bash
-    git clone [URL_REPOSITORI_ANDA](https://github.com/Adytm404/url-shorter-using-n8n-as-backend)
+    git clone [https://github.com/Adytm404/url-shorter-using-n8n-as-backend](https://github.com/Adytm404/url-shorter-using-n8n-as-backend)
     cd url-shorter-using-n8n-as-backend
     ```
 
