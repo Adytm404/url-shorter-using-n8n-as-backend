@@ -1,0 +1,446 @@
+{
+  "name": "Shortlink",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "EUiU2CCSPl1mE1Hb",
+          "mode": "list",
+          "cachedResultName": "shortlink",
+          "cachedResultUrl": "/projects/3eqGn7uhkyU5NqMT/datatables/EUiU2CCSPl1mE1Hb"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "redirect_url",
+              "keyValue": "={{ $json.body.url }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -32
+      ],
+      "id": "3225811d-3a63-41c8-b90d-c24b7ff84944",
+      "name": "check if domain exist",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0b8b8c7b-48da-4701-bb48-a349db744688",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        -32
+      ],
+      "id": "368d9a7d-359b-4e1f-b291-aee8003b9845",
+      "name": "exist?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fungsi untuk menghasilkan 5 huruf acak (kombinasi huruf kecil & besar)\nfunction randomString(length = 5) {\n  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';\n  let result = '';\n  for (let i = 0; i < length; i++) {\n    result += chars.charAt(Math.floor(Math.random() * chars.length));\n  }\n  return result;\n}\n\n// Output langsung tanpa $input.all()\nconst item = {};\n\n// Tambahkan sedikit entropi waktu agar probabilitas duplikat lebih kecil\nconst seed = (Date.now() + Math.random()).toString(36);\nconst mix = seed.charAt(seed.length - 1); // ambil 1 karakter acak berbasis waktu\n\nitem.myNewField = randomString(4) + mix; // total tetap 5 karakter\n\nreturn item;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        96
+      ],
+      "id": "82b9307a-7828-4f59-89a9-7400c5e3641f",
+      "name": "create code"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "EUiU2CCSPl1mE1Hb",
+          "mode": "list",
+          "cachedResultName": "shortlink",
+          "cachedResultUrl": "/projects/3eqGn7uhkyU5NqMT/datatables/EUiU2CCSPl1mE1Hb"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "hashurl": "={{ $json.myNewField }}",
+            "redirect_url": "={{ $('api /domain').item.json.body.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "hashurl",
+              "displayName": "hashurl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "redirect_url",
+              "displayName": "redirect_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        624,
+        96
+      ],
+      "id": "0c52b139-99d0-42de-bc83-dd7890a0902c",
+      "name": "insert code and url"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        800,
+        -32
+      ],
+      "id": "6dddc6e9-14c1-4609-b915-16a750f87fd3",
+      "name": "response json"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "EUiU2CCSPl1mE1Hb",
+          "mode": "list",
+          "cachedResultName": "shortlink",
+          "cachedResultUrl": "/projects/3eqGn7uhkyU5NqMT/datatables/EUiU2CCSPl1mE1Hb"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "hashurl",
+              "condition": "isEmpty"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        -32
+      ],
+      "id": "62648575-5268-4f84-9bbd-878daa76b45e",
+      "name": "check duplicate"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/domain",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        -32
+      ],
+      "id": "456f884b-6dad-4706-a154-08ee99e17124",
+      "name": "api /domain",
+      "webhookId": "a71335f2-c5ff-49b8-bc4d-a4899cff4c5a"
+    },
+    {
+      "parameters": {
+        "path": "redirect",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        416
+      ],
+      "id": "52fb2412-5247-4125-b420-9a72109951cf",
+      "name": "api /redirect?id=",
+      "webhookId": "c34f0b2e-6e44-40e3-a4cf-1c2573291018"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "EUiU2CCSPl1mE1Hb",
+          "mode": "list",
+          "cachedResultName": "shortlink",
+          "cachedResultUrl": "/projects/3eqGn7uhkyU5NqMT/datatables/EUiU2CCSPl1mE1Hb"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "hashurl",
+              "keyValue": "={{ $json.query.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        416
+      ],
+      "id": "f8e55c2c-915b-407d-84eb-8cf2cf45e851",
+      "name": "get data from url"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -80,
+        416
+      ],
+      "id": "95a7c2ed-2bc7-4ccd-a39c-c20a7ce8c8f2",
+      "name": "response json to redirect"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1376ab7-7d67-466c-9ff4-ae6ad38cea6e",
+              "leftValue": "={{ $json.headers.referer }}",
+              "rightValue": "https://s.ogya.io/",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        -32
+      ],
+      "id": "053c46ca-3ee3-4b22-b617-b5aef06a94c1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": true,\n  \"message\": \"invalid access\"\n}",
+        "options": {
+          "responseCode": 503
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        96,
+        144
+      ],
+      "id": "0e8470b0-5847-4521-a8dd-6b4227ae0230",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "check if domain exist": {
+      "main": [
+        [
+          {
+            "node": "exist?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "exist?": {
+      "main": [
+        [
+          {
+            "node": "response json",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "create code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create code": {
+      "main": [
+        [
+          {
+            "node": "insert code and url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insert code and url": {
+      "main": [
+        [
+          {
+            "node": "response json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "response json": {
+      "main": [
+        [
+          {
+            "node": "check duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check duplicate": {
+      "main": [
+        [
+          {
+            "node": "check duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "api /domain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "api /redirect?id=": {
+      "main": [
+        [
+          {
+            "node": "get data from url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get data from url": {
+      "main": [
+        [
+          {
+            "node": "response json to redirect",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "response json to redirect": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "check if domain exist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "226ad6e4-22cd-4164-a89b-2319d7f9b397",
+  "meta": {
+    "instanceId": "0cb0d999272e177a0c7bbcfa5f6800307a54545b35946ab5c70722275c55b153"
+  },
+  "id": "svMlSgAVj2xhdnCA",
+  "tags": []
+}

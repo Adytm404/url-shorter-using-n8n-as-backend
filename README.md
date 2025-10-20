@@ -1,20 +1,60 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Url Shorter - The simple and modern way to shorten your links using n8n.
 
-# Run and deploy your AI Studio app
+Aplikasi penyingkat URL yang cepat, bersih, dan modern. Proyek ini berfungsi sebagai antarmuka (frontend) yang dibangun menggunakan React, Vite, dan TypeScript, yang terhubung ke backend yang ditenagai oleh n8n.
 
-This contains everything you need to run your app locally.
+## Fitur Utama
 
-View your app in AI Studio: https://ai.studio/apps/drive/1NPL349g8XeGqC5va1k_OJs61iOgWVJST
+* **Penyingkat URL:** Mengubah URL yang panjang menjadi tautan pendek yang mudah dibagikan.
+* **Validasi URL:** Memastikan bahwa input yang dimasukkan adalah URL yang valid (harus dimulai dengan `http://` atau `https://`).
+* **Salin ke Clipboard:** Tombol sekali klik untuk menyalin URL yang sudah diperpendek ke clipboard pengguna.
+* **Halaman Pengalihan (Redirect):** Halaman `/:hash` secara dinamis mengambil URL asli dari backend dan mengalihkan pengguna ke tujuan.
+* **Penanganan Status:** Menampilkan status *loading*, *error* (misalnya link tidak ditemukan), dan *success* yang jelas kepada pengguna.
 
-## Run Locally
+## Teknologi yang Digunakan
 
-**Prerequisites:**  Node.js
+* **Frontend:** React, Vite, TypeScript
+* **Routing:** React Router DOM
+* **Styling:** Tailwind CSS (dimuat via CDN)
+* **Ikon:** Font Awesome (dimuat via CDN)
 
+## Prasyarat Backend
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Aplikasi frontend ini **memerlukan backend n8n** yang sudah ada dan sedang berjalan agar dapat berfungsi.
+
+Berdasarkan `services/api.ts`, aplikasi ini dikonfigurasi untuk membuat permintaan ke endpoint berikut:
+
+* **Base URL:** `https://api.cbm-publisher.com`
+* **Shorten Endpoint (POST):** `/webhook/domain`
+* **Redirect Endpoint (GET):** `/webhook/redirect`
+
+Pastikan layanan di atas dapat diakses agar aplikasi ini dapat berfungsi dengan baik.
+
+## Cara Menjalankan Secara Lokal
+
+1.  **Clone repositori:**
+    ```bash
+    git clone [URL_REPOSITORI_ANDA]
+    cd [NAMA_FOLDER_PROYEK]
+    ```
+
+2.  **Instal dependensi:**
+    Gunakan npm untuk menginstal paket-paket yang diperlukan dari `package.json`.
+    ```bash
+    npm install
+    ```
+
+3.  **Jalankan server pengembangan:**
+    Perintah ini akan menjalankan aplikasi dalam mode pengembangan menggunakan Vite.
+    ```bash
+    npm run dev
+    ```
+
+    Aplikasi akan tersedia di `http://localhost:3000` (sesuai konfigurasi di `vite.config.ts`).
+
+## Skrip yang Tersedia
+
+Skrip berikut didefinisikan dalam `package.json`:
+
+* `npm run dev`: Menjalankan aplikasi dalam mode pengembangan.
+* `npm run build`: Mem-build aplikasi untuk produksi ke dalam folder `dist`.
+* `npm run preview`: Menjalankan server lokal untuk meninjau hasil build produksi.
