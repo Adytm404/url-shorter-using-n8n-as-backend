@@ -1,0 +1,5 @@
+{
+  "name": "Shortify - Modern URL Shortener",
+  "description": "A sleek, fast, and modern URL shortener application built with React and Tailwind CSS. Easily shorten long URLs and manage your links.",
+  "requestFramePermissions": []
+}
